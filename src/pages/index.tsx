@@ -24,8 +24,8 @@ const Home: NextPage = () => {
         <h1>Journal</h1>
       </div>
         <div className="grid grid-cols-1 sm:grid-cols-4">
-          {journalEntries.map(entry =>
-            <div className="flex justify-between items-center mx-4 my-2 px-3 py-2 border rounded bg-gray-200">
+          {journalEntries.map((entry, index) =>
+            <div className="flex justify-between items-center mx-4 my-2 px-3 py-2 border rounded bg-gray-200" key={index} >
               <div>
                 <p className="capitalize">{entry.type}</p>
                 <div className="flex flex-row space-x-2 sm:space-x-0 sm:flex-col">
