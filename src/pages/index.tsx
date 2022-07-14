@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Entry from "../components/Entry";
+import AddButton from "../components/AddButton";
 import Head from "next/head";
 
 const Home: NextPage = () => {
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
           <Entry entry={entry} key={index} />
         )}
       </div>
+      <AddButton />
     </>
   );
 };
