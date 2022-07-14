@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { createRouter } from './context';
-import { z } from 'zod';
+import { entry } from '../../sharedTypes';
 
 export const entryRouter = createRouter()
   .query('getAll', {
@@ -9,13 +9,7 @@ export const entryRouter = createRouter()
     },
   })
   .mutation('createEntry', {
-    input: z.object({
-      brewMethod: z.string(),
-      coffeeIn: z.number(),
-      coffeeOut: z.number(),
-      brewTime: z.number(),
-      result: z.string(),
-    }),
+    input: entry,
     async resolve({ ctx, input }) {
       await ctx.prisma.entry.create({
         data: {

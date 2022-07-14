@@ -2,7 +2,10 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { ZodError } from 'zod';
+import { countReset } from 'console';
 import { trpc } from '../utils/trpc';
+import { entry } from '../sharedTypes';
 
 const Add: NextPage = () => {
   const [brewMethod, setBrewMethod] = useState<string>('Espresso');
@@ -10,24 +13,67 @@ const Add: NextPage = () => {
   const [coffeeOut, setCoffeeOut] = useState<number>(0);
   const [brewTime, setBrewTime] = useState<number>(0);
   const [result, setResult] = useState<string>('Good');
+  const defaultFieldErrors = {
+    brewMethod: [],
+    coffeeIn: [],
+    coffeeOut: [],
+    brewTime: [],
+    result: [],
+  };
+  const [fieldErrors, setFieldErrors] = useState(defaultFieldErrors);
   const router = useRouter();
   const createEntry = trpc.useMutation(['entry.createEntry']);
 
   const handleLog = async () => {
-    createEntry.mutate({
-      brewMethod,
-      coffeeIn,
-      coffeeOut,
-      brewTime,
-      result,
-    });
-    router.push('/');
+    try {
+      const validatedEntry = entry.parse({
+        brewMethod,
+        coffeeIn,
+        coffeeOut,
+        brewTime,
+        result,
+      });
+      createEntry.mutate(validatedEntry);
+
+      router.push('/');
+    } catch (error) {
+      if (error instanceof ZodError) {
+        setFieldErrors({ ...fieldErrors, ...error.flatten().fieldErrors });
+      }
+    }
   };
-  const handleBrewMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => { setBrewMethod(e.target.value); };
-  const handleCoffeeInChange = (e: React.ChangeEvent<HTMLInputElement>) => { setCoffeeIn(Number(e.target.value)); };
-  const handleCoffeeOutChange = (e: React.ChangeEvent<HTMLInputElement>) => { setCoffeeOut(Number(e.target.value)); };
-  const handleBrewTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => { setBrewTime(Number(e.target.value)); };
-  const handleResultChange = (e: React.ChangeEvent<HTMLSelectElement>) => { setResult(e.target.value); };
+  const resetErrorForField = (field:string) => {
+    setFieldErrors({ ...fieldErrors, [field]: defaultFieldErrors[field as keyof typeof defaultFieldErrors] });
+  };
+  const handleBrewMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setBrewMethod(e.target.value);
+    resetErrorForField('brewMethod');
+  };
+  const handleCoffeeInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCoffeeIn(Number(e.target.value));
+    resetErrorForField('coffeeIn');
+  };
+  const handleCoffeeOutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCoffeeOut(Number(e.target.value));
+    resetErrorForField('coffeeOut');
+  };
+  const handleBrewTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBrewTime(Number(e.target.value));
+    resetErrorForField('brewTime');
+  };
+  const handleResultChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setResult(e.target.value);
+    resetErrorForField('result');
+  };
+
+  const renderErrorMessage = (field:string) => {
+    const fieldError = fieldErrors?.[field as keyof typeof defaultFieldErrors];
+
+    if (fieldError.length) {
+      return <span className="label-text-alt text-error">{ fieldError[0] }</span>;
+    }
+    return '';
+  };
 
   return (
     <>
@@ -49,6 +95,7 @@ const Add: NextPage = () => {
               <option>Aeropress</option>
               <option>French Press</option>
             </select>
+            { renderErrorMessage('brewMethod') }
           </label>
           <label className="label block" htmlFor="coffee-in">
             <span className="label-text">Coffee In</span>
@@ -58,6 +105,7 @@ const Add: NextPage = () => {
               className="input input-bordered w-full"
               onChange={handleCoffeeInChange}
             />
+            { renderErrorMessage('coffeeIn') }
           </label>
           <label className="label block" htmlFor="coffee-out">
             <span className="label-text">Coffee Out</span>
@@ -67,6 +115,7 @@ const Add: NextPage = () => {
               className="input input-bordered w-full"
               onChange={handleCoffeeOutChange}
             />
+            { renderErrorMessage('coffeeOut') }
           </label>
           <label className="label block" htmlFor="brew-time">
             <span className="label-text">Brew Time</span>
@@ -76,6 +125,7 @@ const Add: NextPage = () => {
               className="input input-bordered w-full"
               onChange={handleBrewTimeChange}
             />
+            { renderErrorMessage('brewTime') }
           </label>
           <label className="label block" htmlFor="result">
             <span className="label-text">Result</span>
@@ -88,6 +138,7 @@ const Add: NextPage = () => {
               <option>Meh</option>
               <option>Bad</option>
             </select>
+            { renderErrorMessage('result') }
           </label>
           <button type="button" className="mt-4 btn btn-primary" onClick={handleLog}>Log</button>
         </form>
