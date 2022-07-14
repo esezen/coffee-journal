@@ -10,9 +10,9 @@ import Layout from '../components/Layout';
 
 const MyApp: AppType = ({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps: { ...pageProps },
 }) => (
-  <SessionProvider session={session}>
+  <SessionProvider>
     <Layout>
       <Component {...pageProps} />
     </Layout>

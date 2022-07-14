@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import React from 'react';
 import Head from 'next/head';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 interface Props {
   children: React.ReactNode,
@@ -8,6 +10,14 @@ interface Props {
 
 const Layout = (props: Props) => {
   const { children } = props;
+  const router = useRouter();
+
+  useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/api/auth/signin');
+    },
+  });
 
   return (
     <>

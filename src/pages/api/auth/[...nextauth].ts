@@ -1,8 +1,7 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-
-// Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import bcrypt from 'bcrypt';
 import { prisma } from '../../../server/db/client';
 
 export const authOptions: NextAuthOptions = {
@@ -13,18 +12,54 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        name: {
-          label: 'Name',
-          type: 'text',
-          placeholder: 'Enter your name',
+        email: {
+          label: 'Email',
+          type: 'email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
         },
       },
       async authorize(credentials) {
-        const user = { id: 1, name: credentials?.name ?? 'J Smith' };
-        return user;
+        if (credentials && credentials.email && credentials.password) {
+          const user = await prisma.user.findFirst({ where: { email: credentials.email } });
+
+          if (user && user.password) {
+            const passwordIsValid = await bcrypt.compare(credentials.password, user.password);
+
+            if (passwordIsValid) return user;
+          }
+        }
+
+        return null;
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        return { ...token, id: user.id };
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (token) {
+        return { ...session, id: token.id };
+      }
+
+      return session;
+    },
+  },
 };
 
 export default NextAuth(authOptions);
