@@ -12,7 +12,13 @@ datasource db {
 
 model Entry {
     id String @id @default(cuid())
-    name String
+    brewMethod String?
+    coffeeIn Int?
+    coffeeOut Int?
+    brewTime Int?
+    result String?
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
 }
 
 // Necessary for Next auth
