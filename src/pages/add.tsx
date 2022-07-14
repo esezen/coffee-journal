@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { trpc } from '../utils/trpc';
@@ -9,6 +10,7 @@ const Add: NextPage = () => {
   const [coffeeOut, setCoffeeOut] = useState<number>(0);
   const [brewTime, setBrewTime] = useState<number>(0);
   const [result, setResult] = useState<string>('Good');
+  const router = useRouter();
   const createEntry = trpc.useMutation(['entry.createEntry']);
 
   const handleLog = async () => {
@@ -19,6 +21,7 @@ const Add: NextPage = () => {
       brewTime,
       result,
     });
+    router.push('/');
   };
   const handleBrewMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => { setBrewMethod(e.target.value); };
   const handleCoffeeInChange = (e: React.ChangeEvent<HTMLInputElement>) => { setCoffeeIn(Number(e.target.value)); };
