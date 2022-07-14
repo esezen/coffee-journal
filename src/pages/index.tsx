@@ -1,7 +1,8 @@
-import type { NextPage } from "next";
-import Entry from "../components/Entry";
-import AddButton from "../components/AddButton";
-import Head from "next/head";
+/* eslint-disable react/no-array-index-key */
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Entry from '../components/Entry';
+import AddButton from '../components/AddButton';
 
 const Home: NextPage = () => {
   const journalEntry = {
@@ -21,9 +22,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="grid grid-cols-1 sm:grid-cols-4">
-        {journalEntries.map((entry, index) =>
-          <Entry entry={entry} key={index} />
-        )}
+        {journalEntries.map((entry, index) => <Entry entry={entry} key={index} />)}
       </div>
       <AddButton />
     </>
