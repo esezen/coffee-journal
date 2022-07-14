@@ -22,14 +22,20 @@ const Home: NextPage = () => {
       </Head>
       { !isAuthenticated
         && (
-        <div>
-          <p>It looks like you did not sign in yet.</p>
-          <Link href="/api/auth/signin">
-            Sign In
-          </Link>
-          <Link href="/signup">
-            Sign Up
-          </Link>
+        <div className="flex flex-col items-center">
+          <p className="text-lg">It looks like you did not sign in yet.</p>
+          <div className="space-x-4 mt-4">
+            <Link href="/api/auth/signin">
+              <button className="btn btn-primary" type="button">
+                Sign In
+              </button>
+            </Link>
+            <Link href="/signup">
+              <button className="btn btn-secondary" type="button">
+                Sign Up
+              </button>
+            </Link>
+          </div>
         </div>
         )}
       { isAuthenticated
