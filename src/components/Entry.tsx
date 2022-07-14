@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from "@heroicons/react/outline";
+import { CheckCircleIcon } from '@heroicons/react/outline';
 
 const Entry = (props) => {
   const { entry } = props;
@@ -8,14 +8,14 @@ const Entry = (props) => {
       <div>
         <p className="capitalize">{entry.type}</p>
         <div className="flex flex-row space-x-2 sm:space-x-0 sm:flex-col">
-          <p>In: {entry.in}</p>
-          <p>Out: {entry.out}</p>
+          <p>In: {entry.coffeeIn}</p>
+          <p>Out: {entry.coffeeOut}</p>
           <p>Time: {entry.brewTime}</p>
         </div>
       </div>
-      <CheckCircleIcon className="h-6 w-6 text-green-600"/>
+      <CheckCircleIcon className="h-6 w-6 text-green-600" />
     </div>
-  )
+  );
 };
 
 export default Entry;

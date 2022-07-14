@@ -3,17 +3,12 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Entry from '../components/Entry';
 import AddButton from '../components/AddButton';
+import { trpc } from '../utils/trpc';
 
 const Home: NextPage = () => {
-  const journalEntry = {
-    type: 'espresso',
-    in: 18,
-    out: 40,
-    brewTime: 25,
-    result: 'good',
-    createdAt: Date.now(),
-  };
-  const journalEntries = [journalEntry, journalEntry, journalEntry];
+  const {
+    data: entries,
+  } = trpc.useQuery(['entry.getAll']);
 
   return (
     <>
@@ -22,7 +17,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="grid grid-cols-1 sm:grid-cols-4">
-        {journalEntries.map((entry, index) => <Entry entry={entry} key={index} />)}
+        {entries && entries.map((entry, index) => <Entry entry={entry} key={index} />)}
       </div>
       <AddButton />
     </>
